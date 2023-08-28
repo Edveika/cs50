@@ -60,7 +60,8 @@ bool repeated_char(string str)
     {
         for (int j = i + 1; j < str_len; ++j)
         {
-            if (str[i] == str[j])
+            // Makes both of the chars to lower case so we can check if they are not the same
+            if (tolower(str[i]) == tolower(str[j]))
                 return true;
         }
     }
