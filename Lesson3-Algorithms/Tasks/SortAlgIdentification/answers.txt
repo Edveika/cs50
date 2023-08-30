@@ -1,0 +1,24 @@
+sort1 uses: Bubble
+random 50k: real    6,6s
+sorted 50k: real    0,14s
+reversed 50k: real  4,9s
+
+How do you know?: O(n) > omega(n)
+O(n^2)
+Omega(n)
+
+sort2 uses: Merge sort
+random 50k: real    0,16s
+sorted 50k: real    0,14s
+reversed 50k: real  0,1s
+
+How do you know?: Its the fastest one at sorting the unsorted array, takes the same amount of time on sorted array, also uses the most memory
+O(n log n)
+Omega(n log n)
+
+sort3 uses: Selection sort, takes the same amount of time to sort unsorted and sorted arrays
+random 50k: real    3,2s
+sorted 50k: real    3,1s
+reversed 50k: real  3,2s
+
+How do you know?: O(n) == omega(n)
