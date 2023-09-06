@@ -51,10 +51,9 @@ void blur(int height, int width, RGBTRIPLE image[height][width])
 {
     for (int i = 0; i < height; ++i)
     {
-        for (int j = 1; j < width; ++j)
+        for (int j = 0; j < width; ++j)
         {
             const int BLUR_STRENGHT = 12;
-            RGBTRIPLE average = { 0, 0, 0};
             int avgr_red = 0;
             int avgr_green = 0;
             int avgr_blue = 0;
@@ -65,9 +64,9 @@ void blur(int height, int width, RGBTRIPLE image[height][width])
                 {
                     if (i + k < height && l + j < width)
                     {
-                        avgr_red *= image[i + k][l + j].rgbtRed;
-                        avgr_green *= image[i + k][l + j].rgbtGreen;
-                        avgr_blue *= image[i + k][l + j].rgbtBlue;
+                        avgr_red += image[i + k][l + j].rgbtRed;
+                        avgr_green += image[i + k][l + j].rgbtGreen;
+                        avgr_blue += image[i + k][l + j].rgbtBlue;
                     }
                 }
             }
