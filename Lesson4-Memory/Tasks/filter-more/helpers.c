@@ -33,6 +33,12 @@ void reflect(int height, int width, RGBTRIPLE image[height][width])
     {
         for (int j = 0; j < width; ++j)
         {
+            for (int k = j + 1; k < width; ++k)
+            {
+                RGBTRIPLE cpy = image[i][j];
+                image[i][j] = image[i][k];
+                image[i][k] = cpy;
+            }
         }
     }
 
