@@ -32,9 +32,6 @@ int main()
     // 26 because 1 bucket per letter
     node* hash_table[26];
 
-    for (int i = 0; i < 26; ++i)
-        hash_table[i] = malloc(sizeof(node));
-
     for (int i = 0; i < human_count; ++i)
     {
         int i_hash = hash_function(humans[i].name);
