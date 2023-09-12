@@ -174,14 +174,56 @@ void sort_pairs(void)
     return;
 }
 
+// Done with a tutorial
+bool has_cycle(int winner, int loser)
+{
+    if (locked[loser][winner] == true)
+        return true;
+
+    for (int i = 0; i < candidate_count; ++i)
+        if (locked[loser][i] == true && has_cycle(winner, i))
+            return true;
+
+    return false;
+}
+
+// Done with tutorial
 // Lock pairs into the candidate graph in order, without creating cycles
 void lock_pairs(void)
 {
+    for (int i = 0; i < pair_count; ++i)
+    {
+        if (has_cycle(pairs[i].winner, pairs[i].loser))
+        {
+            locked[pairs[i].winner][pairs[i].loser] = true;
+        }
+    }
+
     return;
 }
 
+// Done with tutorial
 // Print the winner of the election
 void print_winner(void)
 {
-    return;
+    for (int i = 0; i < candidate_count; i++)
+    {
+        // Assume the current candidate is a potential winner
+        bool is_winner = true;
+        
+        for (int j = 0; j < candidate_count; j++)
+        {
+            if (i != j && locked[i][j])
+            {
+                // If candidate i is locked to candidate j, candidate i cannot be a winner
+                is_winner = false;
+                break;
+            }
+        }
+        
+        if (is_winner && i == candidate_count - 1)
+        {
+            printf("%s\n", candidates[i]);
+        }
+    }
 }
