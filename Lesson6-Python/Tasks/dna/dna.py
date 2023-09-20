@@ -4,12 +4,12 @@ import sys
 def main():
 
     # Check for command-line usage
-    if len(sys.argv) != 3:
-        print("Usage: ./dna database sequence")
-        exit()
+    # if len(sys.argv) != 3:
+    #     print("Usage: ./dna database sequence")
+    #     exit()
 
     # Read database file into a variable
-    with open(sys.argv[1], "r") as database_file:
+    with open("/home/edveika/Programming/cs50/Lesson6-Python/Tasks/dna/databases/large.csv", "r") as database_file:
         reader = csv.reader(database_file)
         next(reader)
         database = []
@@ -19,13 +19,13 @@ def main():
             
 
     # Read DNA sequence file into a variable
-    with open(sys.argv[2], "r") as sequence_file:
+    with open("/home/edveika/Programming/cs50/Lesson6-Python/Tasks/dna/sequences/5.txt", "r") as sequence_file:
         dna_sequence = sequence_file.read()
         print(dna_sequence)
 
     # Find longest match of each STR in DNA sequence
-    longest_run = longest_match(database[4], dna_sequence)
-    print(longest_run)
+    longest_run = longest_match(database, dna_sequence)
+    #print(longest_run)
 
     # Check database for matching profiles
 
