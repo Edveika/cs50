@@ -1,0 +1,16 @@
+body
+{
+    background-color: black;
+    color: white;
+}
+
+#header-button
+{
+    background-color: black;
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    width: 80px;
+    height: 40px;
+    line-height: 40px;
+}
