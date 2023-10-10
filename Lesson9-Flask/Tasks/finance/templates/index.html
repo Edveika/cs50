@@ -14,5 +14,15 @@
                 <th class="text-end">TOTAL</th>
             </tr>
         </thead>
+        <tbody>
+            {% for data in purchase_data %}
+                <tr>
+                    <td class="text-start">{{ data["stock"] }}</td>
+                    <td class="text-end">{{ data["amount"] }}</td>
+                    <td class="text-end">{{ lookup(data["stock"])["price"] }}</td>
+                    <td class="text-end">{{ round(lookup(data["stock"])["price"] * data["amount"], 2) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
 {% endblock %}

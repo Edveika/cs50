@@ -36,7 +36,11 @@ def after_request(response):
 @login_required
 def index():
     """Show portfolio of stocks"""
-    return render_template("index.html")
+
+    if request.method == "GET":
+        purchase_data = db.execute("SELECT * FROM purchases WHERE user_id=?", session["user_id"])
+
+        return render_template("index.html", purchase_data=purchase_data, lookup=lookup, round=round)
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -48,11 +52,11 @@ def buy():
         return render_template("buy.html")
     elif request.method == "POST":
         cur_user_data = db.execute("SELECT * FROM users WHERE id=?", session["user_id"])
-        user_cash = int(cur_user_data[0]["cash"])
+        user_cash = float(cur_user_data[0]["cash"])
 
         stock_symbol = request.form.get("stock-symbol")
         stock_data = lookup(stock_symbol)
-        stock_price = int(stock_data["price"])
+        stock_price = float(stock_data["price"])
         if len(stock_symbol) == 0 or stock_data == None:
             return apology("Stock symbol field cannot be empty and must be valid")
 
@@ -63,11 +67,15 @@ def buy():
         if stock_price * stock_count > user_cash:
             return apology("Sorry, cant afford")
 
-        cur_date = datetime.datetime.now()
-        db.execute("INSERT INTO purchases (amount, stock, user_id, purchase_date) VALUES(?, ?, ?, ?)", stock_count, stock_symbol, session["user_id"], cur_date)
+        user_has_stock = db.execute("SELECT stock FROM purchases WHERE user_id=? AND stock=?", session["user_id"], stock_symbol)
+        if len(user_has_stock) == 0:
+            db.execute("INSERT INTO purchases (amount, stock, user_id) VALUES(?, ?, ?)", stock_count, stock_symbol, session["user_id"])
+        else:
+            db.execute("UPDATE purchases SET amount=amount+? WHERE user_id=? AND stock=?", stock_count,session["user_id"], stock_symbol)
         
-        new_user_cash = user_cash - (stock_price * stock_count)
-        db.execute("UPDATE users SET cash=? WHERE id=?", new_user_cash, session["user_id"])
+        db.execute("INSERT INTO purchase_history (symbol, count, purchase_date, old_price, user_id) VALUES(?, ?, ?, ?, ?)", stock_symbol, stock_count, datetime.datetime.now(), stock_price, session["user_id"])
+
+        db.execute("UPDATE users SET cash=? WHERE id=?", user_cash - (stock_price * stock_count), session["user_id"])
 
         return redirect("/")
 
