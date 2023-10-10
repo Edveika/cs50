@@ -95,7 +95,11 @@ def buy():
 @login_required
 def history():
     """Show history of transactions"""
-    return apology("TODO")
+
+    purchase_history = db.execute("SELECT * FROM purchase_history WHERE user_id=?", session["user_id"])
+    sell_history = db.execute("SELECT * FROM sell_history WHERE user_id=?", session["user_id"])
+
+    return render_template("history.html", purchase_history=purchase_history, sell_history=sell_history)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -143,7 +147,6 @@ def logout():
 
     # Redirect user to login form
     return redirect("/")
-
 
 @app.route("/quote", methods=["GET", "POST"])
 @login_required
