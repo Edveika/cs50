@@ -63,6 +63,9 @@ def buy():
         user_cash = float(cur_user_data[0]["cash"])
 
         stock_symbol = request.form.get("stock-symbol")
+        if lookup(stock_symbol) == None:
+            return apology("This stock does not exist")
+
         stock_data = lookup(stock_symbol)
         stock_price = float(stock_data["price"])
         if len(stock_symbol) == 0 or stock_data == None:
@@ -186,4 +189,36 @@ def register():
 @login_required
 def sell():
     """Sell shares of stock"""
-    return apology("TODO")
+
+    if request.method == "GET":
+        symbols = db.execute("SELECT stock FROM purchases WHERE user_id=?", session["user_id"])
+        return render_template("sell.html", symbols=symbols)
+    elif request.method == "POST":
+        stock_symbol = request.form.get("sell-stock")
+        if len(stock_symbol) == 0:
+            return apology("You have to select a stock")
+        
+        stock_data = db.execute("SELECT * FROM purchases WHERE user_id=? AND stock=?", session["user_id"], stock_symbol)
+
+        if len(stock_symbol) == 0:
+            return apology("You dont have this stock")
+
+        sell_count = int(request.form.get("sell-stock-count"))
+        if int(stock_data[0]["amount"]) < sell_count:
+            return apology("You dont have that many stocks")
+
+        if sell_count < 1:
+            return apology("You have to sell atleast 1 stock")
+
+        cur_stock_price = float(lookup(stock_symbol)["price"])
+        sell_price = cur_stock_price * sell_count
+
+        db.execute("UPDATE purchases SET amount = amount-? WHERE user_id=? AND stock=?", sell_count, session["user_id"], stock_symbol)
+        db.execute("UPDATE users SET cash=cash+? WHERE id=?", sell_price, session["user_id"])
+        db.execute("INSERT INTO sell_history (symbol, count, sell_date, user_id, sell_price) VALUES(?, ?, ?, ?, ?)", stock_symbol, sell_count, datetime.datetime.now(), session["user_id"], cur_stock_price)
+
+        user_data = db.execute("SELECT * FROM purchases WHERE user_id=? AND stock=?", session["user_id"], stock_symbol)
+        if int(user_data[0]["amount"]) == 0:
+            db.execute("DELETE FROM purchases WHERE user_id=? AND stock=?", session["user_id"], stock_symbol)
+
+        return redirect("/")
