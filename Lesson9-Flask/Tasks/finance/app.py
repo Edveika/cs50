@@ -39,8 +39,16 @@ def index():
 
     if request.method == "GET":
         purchase_data = db.execute("SELECT * FROM purchases WHERE user_id=?", session["user_id"])
+        cur_user_data = db.execute("SELECT * FROM users WHERE id=?", session["user_id"])
+        user_cash = float(cur_user_data[0]["cash"])
 
-        return render_template("index.html", purchase_data=purchase_data, lookup=lookup, round=round)
+        stock_sum = 0
+        for data in purchase_data:
+            stock_sum += data["amount"] * lookup(data["stock"])["price"]
+        
+        total = user_cash + stock_sum
+
+        return render_template("index.html", purchase_data=purchase_data, lookup=lookup, round=round, total=total, user_cash=user_cash)
 
 
 @app.route("/buy", methods=["GET", "POST"])

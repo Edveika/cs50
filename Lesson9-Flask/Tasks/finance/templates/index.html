@@ -23,6 +23,14 @@
                     <td class="text-end">{{ round(lookup(data["stock"])["price"] * data["amount"], 2) }}</td>
                 </tr>
             {% endfor %}
+            <tr>
+                <td class="border-0 fw-bold text-end" colspan="4">Cash</td>
+                <td class="border-0 fw-bold text-end" colspan="4">{{round(user_cash, 2)}}</td>
+            </tr>
+            <tr>
+                <td class="border-0 fw-bold text-end" colspan="4">TOTAL</td>
+                <td class="border-0 fw-bold text-end" colspan="4">{{round(total, 2)}}</td>
+            </tr>
         </tbody>
     </table>
 {% endblock %}
