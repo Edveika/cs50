@@ -4,6 +4,7 @@ from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
+import datetime
 
 from helpers import apology, login_required, lookup, usd
 
@@ -35,14 +36,40 @@ def after_request(response):
 @login_required
 def index():
     """Show portfolio of stocks"""
-    return apology("TODO")
+    return render_template("index.html")
 
 
 @app.route("/buy", methods=["GET", "POST"])
 @login_required
 def buy():
     """Buy shares of stock"""
-    return apology("TODO")
+
+    if request.method == "GET":
+        return render_template("buy.html")
+    elif request.method == "POST":
+        cur_user_data = db.execute("SELECT * FROM users WHERE id=?", session["user_id"])
+        user_cash = int(cur_user_data[0]["cash"])
+
+        stock_symbol = request.form.get("stock-symbol")
+        stock_data = lookup(stock_symbol)
+        stock_price = int(stock_data["price"])
+        if len(stock_symbol) == 0 or stock_data == None:
+            return apology("Stock symbol field cannot be empty and must be valid")
+
+        stock_count = int(request.form.get("share-amount"))
+        if stock_count < 0:
+            return apology("Share number must be a positive number")
+
+        if stock_price * stock_count > user_cash:
+            return apology("Sorry, cant afford")
+
+        cur_date = datetime.datetime.now()
+        db.execute("INSERT INTO purchases (amount, stock, user_id, purchase_date) VALUES(?, ?, ?, ?)", stock_count, stock_symbol, session["user_id"], cur_date)
+        
+        new_user_cash = user_cash - (stock_price * stock_count)
+        db.execute("UPDATE users SET cash=? WHERE id=?", new_user_cash, session["user_id"])
+
+        return redirect("/")
 
 
 @app.route("/history")
